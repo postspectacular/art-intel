@@ -15,7 +15,7 @@
 		"preview": "vite preview --open"
 	},
 	"devDependencies": {
-		"@thi.ng/meta-css": "^0.19.10",
+		"@thi.ng/meta-css": "^0.19.11",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4"
 	},

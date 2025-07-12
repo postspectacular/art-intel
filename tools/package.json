@@ -5,7 +5,7 @@
 	"description": "TODO",
 	"type": "module",
 	"dependencies": {
-		"@thi.ng/csv": "^2.3.135",
+		"@thi.ng/csv": "^2.4.0",
 		"@thi.ng/date": "^2.7.56",
 		"@thi.ng/file-io": "^2.2.1",
 		"@thi.ng/imago": "^1.1.5",

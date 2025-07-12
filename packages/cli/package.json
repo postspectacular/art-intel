@@ -26,7 +26,7 @@
 	"dependencies": {
 		"@layerinc/analysis": "^0.0.1",
 		"@thi.ng/api": "^8.11.30",
-		"@thi.ng/args": "^2.7.2",
+		"@thi.ng/args": "^2.8.0",
 		"@thi.ng/compose": "^3.0.33",
 		"@thi.ng/defmulti": "^3.0.70",
 		"@thi.ng/file-io": "^2.2.1",
