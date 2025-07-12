@@ -3,7 +3,14 @@ import { flag, type Args, type Command } from "@thi.ng/args";
 import { json, lower, parseCSV } from "@thi.ng/csv";
 import { readText, writeJSON } from "@thi.ng/file-io";
 import { split } from "@thi.ng/strings";
-import { comp, filter, push, transduce } from "@thi.ng/transducers";
+import {
+	comp,
+	count,
+	filter,
+	mapcat,
+	push,
+	transduce,
+} from "@thi.ng/transducers";
 import type { AppCtx, CommonOpts } from "../api.js";
 import { ARGS_OUT_FILE } from "../args.js";
 
@@ -30,7 +37,7 @@ export const CONVERT_DB: Command<
 };
 
 async function command({ inputs, opts, logger }: AppCtx<ConvertDBOpts>) {
-	const items = transduce(
+	const artworks = transduce(
 		comp(
 			parseCSV({
 				cols: {
@@ -52,6 +59,18 @@ async function command({ inputs, opts, logger }: AppCtx<ConvertDBOpts>) {
 		push(),
 		split(readText(inputs[0], logger))
 	);
-	logger.info("parsed", items.length, "items");
-	writeJSON(opts.outFile, items, null, 4, logger);
+	const numVar = transduce(
+		mapcat((x: any) => x.variations),
+		count(),
+		artworks
+	);
+	logger.info(
+		"parsed",
+		artworks.length,
+		"artworks,",
+		numVar,
+		"variations, total:",
+		artworks.length + numVar
+	);
+	writeJSON(opts.outFile, artworks, null, 4, logger);
 }

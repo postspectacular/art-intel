@@ -55,6 +55,7 @@ async function command(ctx: AppCtx<DownloadOpts>) {
 	const OUT_PATH_MP4 = `${ctx.opts.outDir}/{0}.mp4`;
 	const DB = readJSON(ctx.opts.db, ctx.logger);
 	for (let item of DB) {
+		ctx.logger.info("artwork ID:", item.artworkID, "type:", item.type);
 		await downloadImage(ctx, JPG_URL, OUT_PATH_JPG, item.assetID);
 		await downloadImage(ctx, MP4_URL, OUT_PATH_MP4, item.assetID);
 		if (item.variations) {
