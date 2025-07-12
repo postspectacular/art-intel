@@ -1,0 +1,23 @@
+{
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"packages/*",
+		"examples/*",
+		"tools"
+	],
+	"packageManager": "yarn@4.9.2",
+	"scripts": {
+		"@layerinc": "yarn workspaces foreach -pv --all --include '@layerinc/*'",
+		"@example": "yarn workspaces foreach -pv --all --include '@example/*'",
+		"build": "yarn @layerinc -t run build",
+		"build:examples": "yarn @example run build",
+		"clean": "yarn @layerinc run clean",
+		"doc": "yarn @layerinc run doc",
+		"test": "(cd packages && bun test)"
+	},
+	"devDependencies": {
+		"bun-types": "1.2.17",
+		"dotenv": "^17.2.0"
+	}
+}

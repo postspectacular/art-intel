@@ -1,0 +1,59 @@
+{
+	"name": "@layerinc/analysis",
+	"version": "0.0.1",
+	"description": "TODO",
+	"type": "module",
+	"module": "./index.js",
+	"typings": "./index.d.ts",
+	"sideEffects": false,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/layerinc/art-intelligence.git"
+	},
+	"homepage": "https://layer.com/",
+	"author": "Karsten Schmidt (https://thi.ng)",
+	"license": "Apache-2.0",
+	"scripts": {
+		"build": "tsc",
+		"clean": "bun ../../tools/clean-package.ts",
+		"doc": "typedoc --options ../../typedoc.json --out doc src/index.ts",
+		"pub": "yarn npm publish --access public",
+		"test": "bun test"
+	},
+	"dependencies": {
+		"@layerinc/core": "^0.0.1",
+		"@thi.ng/date": "^2.7.56",
+		"@thi.ng/file-io": "^2.2.1",
+		"@thi.ng/imago": "^1.1.5",
+		"@thi.ng/logger": "^3.1.11",
+		"@thi.ng/math": "^5.11.30",
+		"@thi.ng/pixel": "^7.5.2",
+		"@thi.ng/pixel-flow": "^1.0.1",
+		"@thi.ng/rstream": "^9.2.29",
+		"@thi.ng/vectors": "^8.3.2",
+		"sharp": "^0.34.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.13",
+		"typedoc": "^0.28.7",
+		"typescript": "^5.8.3"
+	},
+	"keywords": [
+		"layer.com",
+		"typescript"
+	],
+	"private": true,
+	"browser": {
+		"process": false,
+		"setTimeout": false
+	},
+	"files": [
+		"./*.js",
+		"./*.d.ts"
+	],
+	"exports": {
+		".": {
+			"default": "./index.js"
+		}
+	}
+}

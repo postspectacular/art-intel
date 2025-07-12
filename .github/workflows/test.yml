@@ -1,0 +1,32 @@
+name: test-all
+permissions: {}
+on:
+    push:
+        branches:
+            - feature/*
+            - develop
+            - main
+        paths:
+            - "packages/**"
+            - "tools/**"
+            - ".github/workflows/**"
+            - "package.json"
+            - "yarn.lock"
+            - "!**.md"
+    pull_request:
+        branches:
+            - develop
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+            - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
+              with:
+                  node-version: ">=20.0.0"
+                  cache: "yarn"
+            - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5
+              with:
+                  bun-version: latest
+            - run: yarn install --immutable
+            - run: yarn test

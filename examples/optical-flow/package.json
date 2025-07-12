@@ -1,0 +1,39 @@
+{
+	"name": "@example/optical-flow",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Animated t-SNE visualization",
+	"author": "Karsten Schmidt <k+npm@thi.ng>",
+	"license": "Apache-2.0",
+	"scripts": {
+		"start": "yarn css:build && yarn start:only",
+		"start:only": "vite --host --open",
+		"dev": "mprocs 'yarn css:watch' 'yarn start:only'",
+		"css:watch": "../../node_modules/.bin/metacss develop --bundle --watch --pretty --out-specs css/framework.json --out-css css/style.css --force @css/includes.txt ../../node_modules/@thi.ng/meta-css/specs/*.mcss.json css/*.mcss.json css/*.mcss",
+		"css:build": "../../node_modules/.bin/metacss develop --bundle --out-specs css/framework.json --out-css css/style.css --force @css/includes.txt ../../node_modules/@thi.ng/meta-css/specs/*.mcss.json css/*.mcss.json css/*.mcss",
+		"build": "yarn css:build && tsc && vite build --base='./'",
+		"preview": "vite preview --open"
+	},
+	"devDependencies": {
+		"@thi.ng/meta-css": "^0.19.10",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.4"
+	},
+	"dependencies": {
+		"@thi.ng/bench": "^3.6.23",
+		"@thi.ng/canvas": "^1.0.17",
+		"@thi.ng/compare": "^2.4.22",
+		"@thi.ng/hiccup-html": "^2.7.28",
+		"@thi.ng/pixel": "^7.5.2",
+		"@thi.ng/pixel-flow": "^1.0.1",
+		"@thi.ng/rdom": "^1.7.46",
+		"@thi.ng/tensors": "^0.8.0",
+		"@thi.ng/transducers": "^9.5.1",
+		"@thi.ng/transducers-stats": "^2.2.28",
+		"@thi.ng/vectors": "^8.3.2"
+	},
+	"browser": {
+		"process": false
+	},
+	"keywords": []
+}
