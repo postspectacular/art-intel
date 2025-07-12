@@ -27,7 +27,7 @@ export const EXTRACT_FRAMES: Command<
 	CommonOpts,
 	AppCtx<ExtractFrameOpts>
 > = {
-	desc: "Extract image sequence from given video",
+	desc: "Extract image sequence from given video asset",
 	opts: <Args<ExtractFrameOpts>>{
 		...ARGS_OUT_DIR,
 		ext: string({
@@ -56,13 +56,13 @@ export const EXTRACT_FRAMES: Command<
 			default: 10,
 		}),
 	},
-	inputs: 1,
+	inputs: [1, Infinity],
 	fn: command,
 };
 
-async function command({ opts, inputs, logger }: AppCtx<ExtractFrameOpts>) {
-	try {
-		const result = await extractVideoFrames(inputs[0], {
+async function command({ inputs, opts, logger }: AppCtx<ExtractFrameOpts>) {
+	for (let input of inputs) {
+		const result = await extractVideoFrames(input, {
 			fps: opts.fps,
 			from: opts.from,
 			to: opts.to,
@@ -78,7 +78,5 @@ async function command({ opts, inputs, logger }: AppCtx<ExtractFrameOpts>) {
 		if (opts.listFiles) {
 			process.stdout.write(result.frames.join("\n") + "\n");
 		}
-	} catch (e) {
-		console.log(e);
 	}
 }

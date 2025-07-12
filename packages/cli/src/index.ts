@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import { HEADER, type AppCtx, type CommonOpts } from "./api.js";
 import { ARGS_COMMON } from "./args.js";
 import { BLOCK_FS } from "./cmd/blockfs.js";
+import { CONVERT_DB } from "./cmd/convert-db.js";
 import { DOWNLOAD_THUMBS } from "./cmd/download-thumbs.js";
 import { EXTRACT_FRAMES } from "./cmd/extract-frames.js";
 
@@ -15,7 +16,7 @@ cliApp<CommonOpts, AppCtx<any>>({
 		// "analyze-colors": ANALYZE_COLORS,
 		// "analyze-motion": ANALYZE_MOTION,
 		blockfs: BLOCK_FS,
-		// "convert-db": CONVERT_DB,
+		"convert-db": CONVERT_DB,
 		"download-thumbs": DOWNLOAD_THUMBS,
 		// "encode-tags": ENCODE_TAGS,
 		"extract-frames": EXTRACT_FRAMES,

@@ -1,7 +1,8 @@
-import { int, string, type Args, type Command } from "@thi.ng/args";
+import { flag, int, string, type Args, type Command } from "@thi.ng/args";
 import { delayed } from "@thi.ng/compose";
 import { readJSON, writeFile } from "@thi.ng/file-io";
 import { bytes, interpolate } from "@thi.ng/strings";
+import { existsSync } from "node:fs";
 import type { AppCtx, CommonOpts } from "../api.js";
 
 const JPG_URL = "https://video-thumbnail-prod.layer.com/{0}/thumbnail.jpg";
@@ -13,6 +14,7 @@ const VAR_MP4_URL =
 
 interface DownloadOpts extends CommonOpts {
 	db: string;
+	force: boolean;
 	outDir: string;
 	throttle: number;
 }
@@ -22,12 +24,16 @@ export const DOWNLOAD_THUMBS: Command<
 	CommonOpts,
 	AppCtx<DownloadOpts>
 > = {
-	desc: "Download selected or all artwork thumbnails (images & video versions) from Layer CDN",
+	desc: "Download artwork thumbnails (images & videos) from Layer CDN",
 	opts: <Args<DownloadOpts>>{
 		db: string({
 			desc: "Database JSON snapshot (created via `convert-db`)",
 			hint: "PATH",
 			optional: false,
+		}),
+		force: flag({
+			alias: "f",
+			desc: "Force re-download of existing assets",
 		}),
 		outDir: string({
 			alias: "o",
@@ -78,12 +84,17 @@ const downloadImage = async (
 	id: string
 ) => {
 	try {
+		const dest = interpolate(outPath, id);
+		if (!opts.force && existsSync(dest)) {
+			logger.debug(`file ${dest} exists, skipping download...`);
+			return;
+		}
 		const url = interpolate(baseURL, id);
 		logger.info("loading:", url);
 		const res = await fetch(url, { redirect: "follow" });
 		const buf = new Uint8Array(await res.arrayBuffer());
 		logger.info("read", bytes(buf.length));
-		writeFile(interpolate(outPath, id), buf, undefined, logger);
+		writeFile(dest, buf, undefined, logger);
 	} catch (e) {
 		logger.warn(e);
 	}
