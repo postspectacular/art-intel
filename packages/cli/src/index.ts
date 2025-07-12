@@ -7,6 +7,7 @@ import { BLOCK_FS } from "./cmd/blockfs.js";
 import { CONVERT_DB } from "./cmd/convert-db.js";
 import { DOWNLOAD_THUMBS } from "./cmd/download-thumbs.js";
 import { EXTRACT_FRAMES } from "./cmd/extract-frames.js";
+import { CONVERT_TSNE } from "./cmd/tsne.js";
 
 config({ quiet: true });
 
@@ -17,12 +18,12 @@ cliApp<CommonOpts, AppCtx<any>>({
 		// "analyze-motion": ANALYZE_MOTION,
 		blockfs: BLOCK_FS,
 		"convert-db": CONVERT_DB,
+		"convert-tsne": CONVERT_TSNE,
 		"download-thumbs": DOWNLOAD_THUMBS,
 		// "encode-tags": ENCODE_TAGS,
 		"extract-frames": EXTRACT_FRAMES,
 		// "process-thumbs": PROCESS_THUMBS,
 		// report: REPORT,
-		// tsne: PREPARE_TSNE,
 	},
 	name: "layer",
 	ctx: async (ctx) => {
@@ -35,9 +36,9 @@ cliApp<CommonOpts, AppCtx<any>>({
 		prefix: `${HEADER}
 
 Usage: layer <cmd> [opts] input [...]
-       layer <cmd> --help\n`,
+       layer <cmd> --help\n\n`,
 		showGroupNames: true,
-		paramWidth: 28,
+		paramWidth: 30,
 		lineWidth: 96,
 	},
 });
