@@ -2,7 +2,7 @@ import type { Nullable } from "@thi.ng/api";
 import { flag, int, string, type Args, type Command } from "@thi.ng/args";
 import { BASE62 } from "@thi.ng/base-n";
 import { FMT_yyyyMMdd_HHmmss } from "@thi.ng/date";
-import { ensureDir, readJSON, writeFile, writeJSON } from "@thi.ng/file-io";
+import { readJSON, writeFile, writeJSON } from "@thi.ng/file-io";
 import { nest, output, processImage, resize } from "@thi.ng/imago";
 import { dirname, resolve } from "node:path";
 import type { AppCtx, CommonOpts } from "../api.js";
@@ -23,7 +23,7 @@ export const CONVERT_TSNE: Command<TSNEOpts, CommonOpts, AppCtx<TSNEOpts>> = {
 	opts: <Args<TSNEOpts>>{
 		...ARGS_OUT_DIR,
 		assetDir: string({
-			desc: "Asset directory containing thumbnails. If omitted assumes the same dir as input (JSON database)",
+			desc: "Asset directory containing original thumbnails. If omitted will use $LAYER_ASSET_DIR env var or failing that assumes the same dir as input (JSON database)",
 		}),
 		noBundle: flag({
 			desc: "Disable bundling thumbnails in virtual block file system",
@@ -34,13 +34,13 @@ export const CONVERT_TSNE: Command<TSNEOpts, CommonOpts, AppCtx<TSNEOpts>> = {
 		}),
 		size: int({
 			alias: "s",
-			hint: "PIXELS",
+			hint: "PIX",
 			desc: "Image size used for t-SNE clustering",
 			default: 8,
 		}),
 		thumbWidth: int({
 			alias: "w",
-			hint: "PIXELS",
+			hint: "PIX",
 			desc: "Thumbnail size for visualization",
 			default: 64,
 		}),
@@ -50,13 +50,15 @@ export const CONVERT_TSNE: Command<TSNEOpts, CommonOpts, AppCtx<TSNEOpts>> = {
 };
 
 async function command(ctx: AppCtx<TSNEOpts>) {
-	const { opts, logger } = ctx;
+	const { inputs, opts, logger } = ctx;
+	if (!opts.assetDir) {
+		opts.assetDir = process.env.LAYER_ASSET_DIR ?? dirname(inputs[0]);
+	}
 	const outDir = resolve(ctx.opts.outDir);
-	ensureDir(outDir);
 	const sessionID = FMT_yyyyMMdd_HHmmss();
 	const items = await processArtworks(ctx);
-	writeJSON(`${outDir}/tsne-${sessionID}.json`, items, null, "", logger);
 	if (!opts.noBundle) await bundleThumbnails(ctx, items, sessionID);
+	writeJSON(`${outDir}/tsne-${sessionID}.json`, items, null, "", logger);
 }
 
 type ArtworkType = "video" | "generative";
@@ -88,16 +90,19 @@ interface TSNEItem {
 const processArtworks = async (ctx: AppCtx<TSNEOpts>) => {
 	const { inputs, opts, logger } = ctx;
 	const db = readJSON(inputs[0], logger);
-	const assetRoot = resolve(opts.assetDir ?? dirname(inputs[0]));
+	const assetRoot = resolve(opts.assetDir);
 	const outDir = resolve(ctx.opts.outDir);
 	const items: TSNEItem[] = [];
 	for (let item of iterateArtworks(db)) {
 		const path = `${assetRoot}/${item.id}.${opts.ext}`;
 		const result = await processArtwork(path, opts.thumbWidth, opts.size);
+		const prefix =
+			item.id!.substring(0, 2) + "/" + item.id!.substring(2, 4);
 		writeFile(
-			// use altID (max. 22 chars) for BlockFS compat
-			// (filename max length = 31 chars)
-			`${outDir}/${item.altID}-t.avif`,
+			// use altID (base62, max. 22 chars) for BlockFS compat
+			// (filename max length = 31 chars, here max. 27)
+			// max UUID: ffffffff-ffff-ffff-ffff-ffffffffffff => 7n42DGM5Tflk9n8mt7Fhc7
+			`${outDir}/${prefix}/${item.altID}.avif`,
 			result.thumb,
 			undefined,
 			logger
@@ -151,9 +156,21 @@ function* iterateArtworks(db: Artwork[]): IterableIterator<Partial<TSNEItem>> {
 	}
 }
 
+/**
+ * Converts UUID into base62 encoded ID
+ *
+ * @param uuid
+ */
 const base62ID = (uuid: string) =>
 	BASE62.encodeBigInt(BigInt("0x" + uuid.replace(/-/g, "")));
 
+/**
+ *
+ * @param ctx
+ * @param items
+ * @param sessionID
+ * @returns
+ */
 const bundleThumbnails = (
 	ctx: AppCtx<TSNEOpts>,
 	items: TSNEItem[],
@@ -166,7 +183,7 @@ const bundleThumbnails = (
 		opts: {
 			blockSize: 512,
 			outFile: `${outDir}/thumbnails-${sessionID}.dat`,
-			include: items.map((x) => x.altID + "-t.avif"),
+			include: items.map((x) => x.altID + ".avif"),
 			verbose: ctx.opts.verbose,
 			quiet: ctx.opts.quiet,
 			list: false,

@@ -1,4 +1,3 @@
-import type { Note } from "@layerinc/core";
 import { BlockFS } from "@thi.ng/block-fs/fs";
 import { MemoryBlockStorage } from "@thi.ng/block-fs/storage/memory";
 import { canvas2d } from "@thi.ng/canvas";
@@ -12,8 +11,8 @@ import { U32, Z4 } from "@thi.ng/strings";
 import { TSNE } from "@thi.ng/tsne";
 import { sum } from "@thi.ng/vectors";
 
-const DB_URL = "tsne-20250713-015804.json";
-const THUMBNAIL_URL = "thumbnails-20250713-015804.dat";
+const DB_URL = "tsne-20250713-114354.json";
+const THUMBNAIL_URL = "thumbnails-20250713-114354.dat";
 
 interface TSNEItem {
 	id: string;
@@ -38,26 +37,19 @@ const BOUNDS = 1580;
 // const ROT_SPEEDY = 0.0033;
 
 // const SEED = SYSTEM.int();
-
-// const SEED = 0x428c80dc;
-// const SEED = 0x90ce48e2;
-// const SEED = 0x50678598;
-// const SEED = 0x5727cfb2;
-// const SEED = 0x7fa0df28;
-// const SEED = 0xdb7837bd;
-
-// const SEED = 0x5c26ca7a;
-
 const SEED = 0xab245570;
-
 console.log(U32(SEED));
 
-// deterministic PRNG instance
+const BASE_NAME = `${SESSION_ID}-${U32(SEED)}`;
+
+// deterministic PRNG instance for reproducible visualization
 const RND = new XsAdd(SEED);
 
+// load thumbnails as binary blob
 const response = await fetch(THUMBNAIL_URL);
 const buffer = await response.arrayBuffer();
 
+// map buffer as virtual file system
 const BS = 512;
 const FS = new BlockFS(
 	new MemoryBlockStorage({
@@ -68,25 +60,24 @@ const FS = new BlockFS(
 );
 await FS.init();
 
+// load artwork JSON
 const $DB = <TSNEItem[]>await (await fetch(DB_URL)).json();
+// filter out items with empty thumbnails
 const DB = $DB.filter((x) => sum(x.tsne) > 0);
 const NUM = DB.length;
 console.log($DB.length, "raw");
 console.log(NUM, "items");
 
-const assetPathForHash = (hash: string) =>
-	`${hash.substring(0, 2)}/${hash.substring(2, 4)}`;
+// returns thumbnail path for given artwork
+const assetPath = ({ id, altID }: TSNEItem) =>
+	`${id.substring(0, 2)}/${id.substring(2, 4)}/${altID}.avif`;
 
+// load images from block storage
 const images = await Promise.all(
-	DB.map(async (x) =>
-		imageFromURL(await FS.readAsObjectURL(`${x.altID}-t.avif`))
-	)
+	DB.map(async (x) => imageFromURL(await FS.readAsObjectURL(assetPath(x))))
 );
 
-for (let x of DB) {
-	if (!x.tsne || x.tsne.length != 192) throw new Error(x.altID);
-}
-
+// init t-SNE solver
 const tsne = new TSNE(
 	DB.map((x) => x.tsne),
 	{
@@ -107,7 +98,6 @@ const canvas = canvas2d(W, H, document.body);
 let frame = 0;
 
 const update = () => {
-	// console.log(performance.now());
 	if (!(frame % 100)) console.log(frame);
 	tsne.update();
 	const pts = <Points>(
@@ -153,11 +143,7 @@ const update = () => {
 		]),
 	];
 	draw(canvas.ctx, scene);
-	if (RECORD)
-		downloadCanvas(
-			canvas.canvas,
-			`${SESSION_ID}-${U32(SEED)}-${Z4(frame)}`
-		);
+	if (RECORD) downloadCanvas(canvas.canvas, `${BASE_NAME}-${Z4(frame)}`);
 	frame++;
 };
 
