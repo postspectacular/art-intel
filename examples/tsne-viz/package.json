@@ -20,17 +20,14 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
-		"@thi.ng/bench": "^3.6.23",
+		"@layerinc/core": "workspace:^",
 		"@thi.ng/block-fs": "^0.6.3",
 		"@thi.ng/canvas": "^1.0.17",
-		"@thi.ng/compare": "^2.4.22",
 		"@thi.ng/date": "^2.7.56",
 		"@thi.ng/dl-asset": "^2.3.113",
 		"@thi.ng/geom": "^8.1.54",
 		"@thi.ng/hiccup-canvas": "^3.1.59",
-		"@thi.ng/math": "^5.11.30",
 		"@thi.ng/pixel": "^7.5.2",
-		"@thi.ng/ramp": "^3.3.42",
 		"@thi.ng/random": "^4.1.21",
 		"@thi.ng/strings": "^3.9.16",
 		"@thi.ng/tsne": "^0.1.22",

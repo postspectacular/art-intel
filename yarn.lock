@@ -223,18 +223,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@example/tsne-viz@workspace:examples/tsne-viz"
   dependencies:
-    "@thi.ng/bench": "npm:^3.6.23"
+    "@layerinc/core": "workspace:^"
     "@thi.ng/block-fs": "npm:^0.6.3"
     "@thi.ng/canvas": "npm:^1.0.17"
-    "@thi.ng/compare": "npm:^2.4.22"
     "@thi.ng/date": "npm:^2.7.56"
     "@thi.ng/dl-asset": "npm:^2.3.113"
     "@thi.ng/geom": "npm:^8.1.54"
     "@thi.ng/hiccup-canvas": "npm:^3.1.59"
-    "@thi.ng/math": "npm:^5.11.30"
     "@thi.ng/meta-css": "npm:^0.19.11"
     "@thi.ng/pixel": "npm:^7.5.2"
-    "@thi.ng/ramp": "npm:^3.3.42"
     "@thi.ng/random": "npm:^4.1.21"
     "@thi.ng/strings": "npm:^3.9.16"
     "@thi.ng/tsne": "npm:^0.1.22"
@@ -682,7 +679,6 @@ __metadata:
     "@thi.ng/math": "npm:^5.11.30"
     "@thi.ng/pixel": "npm:^7.5.2"
     "@thi.ng/pixel-flow": "npm:^1.0.1"
-    "@thi.ng/rstream": "npm:^9.2.29"
     "@thi.ng/vectors": "npm:^8.3.2"
     "@types/node": "npm:^24.0.13"
     sharp: "npm:^0.34.3"
@@ -720,7 +716,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@layerinc/core@npm:^0.0.1, @layerinc/core@workspace:packages/core":
+"@layerinc/core@npm:^0.0.1, @layerinc/core@workspace:^, @layerinc/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@layerinc/core@workspace:packages/core"
   dependencies:
@@ -1801,21 +1797,6 @@ __metadata:
   version: 2.3.47
   resolution: "@thi.ng/prefixes@npm:2.3.47"
   checksum: 10/f6d0e3c1ae7bdc54b2611758ad39409ede70d0109df995996b624f87beb8b4c436ea2c2941f84f5935d26bb49bd5a442232eb65825e7fb66e261f7bf31d7520c
-  languageName: node
-  linkType: hard
-
-"@thi.ng/ramp@npm:^3.3.42":
-  version: 3.3.42
-  resolution: "@thi.ng/ramp@npm:3.3.42"
-  dependencies:
-    "@thi.ng/api": "npm:^8.11.30"
-    "@thi.ng/arrays": "npm:^2.13.2"
-    "@thi.ng/compare": "npm:^2.4.22"
-    "@thi.ng/errors": "npm:^2.5.36"
-    "@thi.ng/math": "npm:^5.11.30"
-    "@thi.ng/transducers": "npm:^9.5.1"
-    "@thi.ng/vectors": "npm:^8.3.2"
-  checksum: 10/40b845c98ce6bdc45d98420f5903e2dde2ce00115ecf6a777016e95c8a216d8c1edffcd0bbdfbfcfceb924ba3e4909227da049e62bed0d17446c6bbfa5a60e43
   languageName: node
   linkType: hard
 

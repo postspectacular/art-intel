@@ -29,7 +29,6 @@
 		"@thi.ng/math": "^5.11.30",
 		"@thi.ng/pixel": "^7.5.2",
 		"@thi.ng/pixel-flow": "^1.0.1",
-		"@thi.ng/rstream": "^9.2.29",
 		"@thi.ng/vectors": "^8.3.2",
 		"sharp": "^0.34.3"
 	},
