@@ -11,11 +11,15 @@ import { XsAdd } from "@thi.ng/random";
 import { U32, Z4 } from "@thi.ng/strings";
 import { TSNE } from "@thi.ng/tsne";
 import { sum } from "@thi.ng/vectors";
-import DB_URL from "./_db-layer.json?url";
-import THUMBNAILS from "./thumbnails-512.dat?url";
 
-interface TSNEItem extends Note {
-	img8x8: number[];
+const DB_URL = "tsne-20250713-015804.json";
+const THUMBNAIL_URL = "thumbnails-20250713-015804.dat";
+
+interface TSNEItem {
+	id: string;
+	altID: string;
+	artworkID: string;
+	tsne: number[];
 }
 
 const RECORD = false;
@@ -51,7 +55,7 @@ console.log(U32(SEED));
 // deterministic PRNG instance
 const RND = new XsAdd(SEED);
 
-const response = await fetch(THUMBNAILS);
+const response = await fetch(THUMBNAIL_URL);
 const buffer = await response.arrayBuffer();
 
 const BS = 512;
@@ -65,7 +69,7 @@ const FS = new BlockFS(
 await FS.init();
 
 const $DB = <TSNEItem[]>await (await fetch(DB_URL)).json();
-const DB = $DB.filter((x) => sum(x.img8x8) > 0);
+const DB = $DB.filter((x) => sum(x.tsne) > 0);
 const NUM = DB.length;
 console.log($DB.length, "raw");
 console.log(NUM, "items");
@@ -75,16 +79,16 @@ const assetPathForHash = (hash: string) =>
 
 const images = await Promise.all(
 	DB.map(async (x) =>
-		imageFromURL(
-			await FS.readAsObjectURL(
-				`${assetPathForHash(x._hash)}/${x._id}-poster.avif`
-			)
-		)
+		imageFromURL(await FS.readAsObjectURL(`${x.altID}-t.avif`))
 	)
 );
 
+for (let x of DB) {
+	if (!x.tsne || x.tsne.length != 192) throw new Error(x.altID);
+}
+
 const tsne = new TSNE(
-	DB.map((x) => x.img8x8),
+	DB.map((x) => x.tsne),
 	{
 		rnd: RND,
 		perplexity: 20,
