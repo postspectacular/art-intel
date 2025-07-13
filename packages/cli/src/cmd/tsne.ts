@@ -1,4 +1,4 @@
-import type { Nullable } from "@thi.ng/api";
+import type { Artwork, TSNEItem } from "@layerinc/core";
 import { flag, int, string, type Args, type Command } from "@thi.ng/args";
 import { BASE62 } from "@thi.ng/base-n";
 import { FMT_yyyyMMdd_HHmmss } from "@thi.ng/date";
@@ -59,32 +59,6 @@ async function command(ctx: AppCtx<TSNEOpts>) {
 	const items = await processArtworks(ctx);
 	if (!opts.noBundle) await bundleThumbnails(ctx, items, sessionID);
 	writeJSON(`${outDir}/tsne-${sessionID}.json`, items, null, "", logger);
-}
-
-type ArtworkType = "video" | "generative";
-type ArtworkStatus = "in_review";
-
-interface Artwork {
-	title: string;
-	type: ArtworkType;
-	status: ArtworkStatus;
-	variations: Nullable<ArtworkVariation[]>;
-	artworkID: string;
-	artistID: string;
-	artistName: string;
-	assetID: string;
-}
-
-interface ArtworkVariation {
-	id: string;
-	parameters: Record<string, any>;
-}
-
-interface TSNEItem {
-	id: string;
-	altID: string;
-	artworkID: string;
-	tsne: number[];
 }
 
 const processArtworks = async (ctx: AppCtx<TSNEOpts>) => {

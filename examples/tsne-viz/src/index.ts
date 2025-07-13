@@ -1,5 +1,5 @@
-import { BlockFS } from "@thi.ng/block-fs/fs";
-import { MemoryBlockStorage } from "@thi.ng/block-fs/storage/memory";
+import type { TSNEItem } from "@layerinc/core";
+import { BlockFS, MemoryBlockStorage } from "@thi.ng/block-fs";
 import { canvas2d } from "@thi.ng/canvas";
 import { FMT_yyyyMMdd_HHmmss } from "@thi.ng/date";
 import { downloadCanvas } from "@thi.ng/dl-asset";
@@ -13,13 +13,6 @@ import { sum } from "@thi.ng/vectors";
 
 const DB_URL = "tsne-20250713-114354.json";
 const THUMBNAIL_URL = "thumbnails-20250713-114354.dat";
-
-interface TSNEItem {
-	id: string;
-	altID: string;
-	artworkID: string;
-	tsne: number[];
-}
 
 const RECORD = false;
 // const RECORD = true;
