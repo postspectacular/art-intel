@@ -1,21 +1,51 @@
-import { output, processImage, resize } from "@thi.ng/imago";
-import { ARGB8888, FLOAT_RGB, intBuffer } from "@thi.ng/pixel";
+import { output, processImage, resize, type ProcSpec } from "@thi.ng/imago";
+import type { ILogger } from "@thi.ng/logger";
+import {
+	ARGB8888,
+	FLOAT_GRAY,
+	FLOAT_RGB,
+	GRAY8,
+	intBuffer,
+} from "@thi.ng/pixel";
 
-export const intBufferFromFile = async (path: string, width: number) => {
+export const intBufferFromFileARGB = async (
+	path: string,
+	size?: number,
+	logger?: ILogger
+) => {
+	logger?.debug("loading image:", path);
+	const proc: ProcSpec[] = [
+		output({ id: "img", raw: { alpha: true, meta: true } }),
+	];
+	if (size != null) proc.unshift(resize({ size: [size, size], bg: "#000" }));
 	const {
 		outputs: { img },
-	} = await processImage(path, [
-		resize({ size: [width, width] }),
-		output({ id: "img", raw: { alpha: true } }),
-	]);
+		outputMeta: { img: meta },
+	} = await processImage(path, proc);
 	const buf = <Buffer>img;
-	return intBuffer(
-		width,
-		width,
+	const res = intBuffer(
+		(<any>meta).width,
+		(<any>meta).height,
 		ARGB8888,
 		new Uint32Array(buf.buffer, buf.byteOffset, buf.byteLength >> 2)
 	);
+	return res;
 };
 
-export const floatBufferFromFile = async (path: string, width: number) =>
-	(await intBufferFromFile(path, width)).as(FLOAT_RGB);
+export const intBufferFromFileGray = async (
+	path: string,
+	size?: number,
+	logger?: ILogger
+) => (await intBufferFromFileARGB(path, size, logger)).as(GRAY8);
+
+export const floatBufferFromFileRGB = async (
+	path: string,
+	size?: number,
+	logger?: ILogger
+) => (await intBufferFromFileARGB(path, size, logger)).as(FLOAT_RGB);
+
+export const floatBufferFromFileGray = async (
+	path: string,
+	size?: number,
+	logger?: ILogger
+) => (await intBufferFromFileARGB(path, size, logger)).as(FLOAT_GRAY);
