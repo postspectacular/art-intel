@@ -1,5 +1,5 @@
 {
-	"name": "@layerinc/tags",
+	"name": "@layerinc/viz",
 	"version": "0.0.1",
 	"description": "TODO",
 	"type": "module",
@@ -21,8 +21,14 @@
 		"test": "bun test"
 	},
 	"dependencies": {
+		"@layerinc/analysis": "^0.0.1",
+		"@layerinc/core": "^0.0.1",
 		"@thi.ng/api": "^8.11.30",
 		"@thi.ng/checks": "^3.7.10",
+		"@thi.ng/color": "^5.7.46",
+		"@thi.ng/geom": "^8.1.56",
+		"@thi.ng/hiccup": "^5.3.16",
+		"@thi.ng/hiccup-svg": "^5.4.42",
 		"@thi.ng/transducers": "^9.6.0"
 	},
 	"devDependencies": {

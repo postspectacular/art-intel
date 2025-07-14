@@ -15,7 +15,7 @@
 		"preview": "vite preview --open"
 	},
 	"devDependencies": {
-		"@thi.ng/meta-css": "^0.19.11",
+		"@thi.ng/meta-css": "^0.19.13",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4"
 	},
@@ -26,11 +26,11 @@
 		"@thi.ng/hiccup-html": "^2.7.28",
 		"@thi.ng/pixel": "^7.5.2",
 		"@thi.ng/pixel-flow": "^1.0.1",
-		"@thi.ng/rdom": "^1.7.46",
-		"@thi.ng/tensors": "^0.8.0",
-		"@thi.ng/transducers": "^9.5.1",
-		"@thi.ng/transducers-stats": "^2.2.28",
-		"@thi.ng/vectors": "^8.3.2"
+		"@thi.ng/rdom": "^1.7.48",
+		"@thi.ng/tensors": "^0.8.1",
+		"@thi.ng/transducers": "^9.6.0",
+		"@thi.ng/transducers-stats": "^2.2.29",
+		"@thi.ng/vectors": "^8.3.3"
 	},
 	"browser": {
 		"process": false
