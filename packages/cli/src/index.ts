@@ -3,6 +3,8 @@ import { LogLevel } from "@thi.ng/logger";
 import { config } from "dotenv";
 import { HEADER, type AppCtx, type CommonOpts } from "./api.js";
 import { ARGS_COMMON } from "./args.js";
+import { ANALYZE_COLORS } from "./cmd/analyze-colors.js";
+import { ANALYZE_MOTION } from "./cmd/analyze-motion.js";
 import { BLOCK_FS } from "./cmd/blockfs.js";
 import { CONVERT_DB } from "./cmd/convert-db.js";
 import { DOWNLOAD_THUMBS } from "./cmd/download-thumbs.js";
@@ -14,16 +16,13 @@ config({ quiet: true });
 cliApp<CommonOpts, AppCtx<any>>({
 	opts: ARGS_COMMON,
 	commands: {
-		// "analyze-colors": ANALYZE_COLORS,
-		// "analyze-motion": ANALYZE_MOTION,
+		"analyze-colors": ANALYZE_COLORS,
+		"analyze-motion": ANALYZE_MOTION,
 		blockfs: BLOCK_FS,
 		"convert-db": CONVERT_DB,
 		"convert-tsne": CONVERT_TSNE,
 		"download-thumbs": DOWNLOAD_THUMBS,
-		// "encode-tags": ENCODE_TAGS,
 		"extract-frames": EXTRACT_FRAMES,
-		// "process-thumbs": PROCESS_THUMBS,
-		// report: REPORT,
 	},
 	name: "layer",
 	ctx: async (ctx) => {

@@ -10,7 +10,7 @@ import {
 	type Tuple,
 } from "@thi.ng/args";
 import type { AppCtx, CommonOpts } from "../api.js";
-import { ARGS_OUT_DIR } from "../args.js";
+import { ARG_OUT_DIR } from "../args.js";
 
 interface ExtractFrameOpts extends CommonOpts {
 	ext: string;
@@ -29,7 +29,7 @@ export const EXTRACT_FRAMES: Command<
 > = {
 	desc: "Extract image sequence from given video asset",
 	opts: <Args<ExtractFrameOpts>>{
-		...ARGS_OUT_DIR,
+		...ARG_OUT_DIR(process.env.LAYER_TMP_DIR),
 		ext: string({
 			desc: "File type/extension for still frames",
 			default: "png",

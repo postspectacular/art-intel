@@ -6,7 +6,7 @@ import { readJSON, writeFile, writeJSON } from "@thi.ng/file-io";
 import { nest, output, processImage, resize } from "@thi.ng/imago";
 import { dirname, resolve } from "node:path";
 import type { AppCtx, CommonOpts } from "../api.js";
-import { ARGS_OUT_DIR } from "../args.js";
+import { ARG_OUT_DIR } from "../args.js";
 import { BLOCK_FS } from "./blockfs.js";
 
 interface TSNEOpts extends CommonOpts {
@@ -21,9 +21,10 @@ interface TSNEOpts extends CommonOpts {
 export const CONVERT_TSNE: Command<TSNEOpts, CommonOpts, AppCtx<TSNEOpts>> = {
 	desc: "Convert JSON database and thumbnails for t-SNE visualization",
 	opts: <Args<TSNEOpts>>{
-		...ARGS_OUT_DIR,
+		...ARG_OUT_DIR,
 		assetDir: string({
 			desc: "Asset directory containing original thumbnails. If omitted will use $LAYER_ASSET_DIR env var or failing that assumes the same dir as input (JSON database)",
+			default: process.env.LAYER_ASSET_DIR,
 		}),
 		noBundle: flag({
 			desc: "Disable bundling thumbnails in virtual block file system",

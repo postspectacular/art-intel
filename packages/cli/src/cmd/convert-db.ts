@@ -12,7 +12,7 @@ import {
 	transduce,
 } from "@thi.ng/transducers";
 import type { AppCtx, CommonOpts } from "../api.js";
-import { ARGS_OUT_FILE } from "../args.js";
+import { ARG_OUT_FILE } from "../args.js";
 
 interface ConvertDBOpts extends CommonOpts {
 	all: boolean;
@@ -26,7 +26,7 @@ export const CONVERT_DB: Command<
 > = {
 	desc: "Convert & filter Supabase CSV database snapshot into JSON",
 	opts: <Args<ConvertDBOpts>>{
-		...ARGS_OUT_FILE,
+		...ARG_OUT_FILE,
 		all: flag({
 			alias: "a",
 			desc: "Include drafts & unpublished items",
