@@ -8,7 +8,14 @@ import {
 } from "@thi.ng/canvas";
 import { compareByKey } from "@thi.ng/compare";
 import { div, inputFile, main } from "@thi.ng/hiccup-html";
-import { GRAY8, imageFromFile, IntBuffer, intBuffer } from "@thi.ng/pixel";
+import {
+	FLOAT_GRAY,
+	GRAY8,
+	imageFromFile,
+	IntBuffer,
+	intBuffer,
+} from "@thi.ng/pixel";
+import { BOX_BLUR3, convolveImage } from "@thi.ng/pixel-convolve";
 import { OpticalFlow } from "@thi.ng/pixel-flow";
 import { $compile, $wrapEl } from "@thi.ng/rdom";
 import { asTensor, integrate } from "@thi.ng/tensors";
@@ -26,6 +33,8 @@ import {
 const W = 640;
 const H = W;
 const DPR = window.devicePixelRatio || 1;
+// if true, pre-blur frames before optical flow analysis
+const USE_BLUR = true;
 
 const FPS = 15;
 
@@ -78,10 +87,12 @@ class OpticalFlowViz {
 
 	updateFlow() {
 		const t0 = performance.now();
-		const currFrame = this.grabFrame();
-		// const currFrame = convolveImage(this.grabFrame().as(FLOAT_GRAY), {
-		// 	kernel: BOX_BLUR3,
-		// }).as(GRAY8);
+		let currFrame = this.grabFrame();
+		if (USE_BLUR) {
+			currFrame = convolveImage(currFrame.as(FLOAT_GRAY), {
+				kernel: BOX_BLUR3,
+			}).as(GRAY8);
+		}
 		const currData = currFrame.data;
 		const prevData = this.flow.prev.data;
 		const diffData = this.diffFrame.data;
