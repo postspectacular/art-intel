@@ -1,11 +1,15 @@
-import type { Artwork } from "@layerinc/core";
+import { analyzeMotion, imageSequenceIntARGB } from "@layerinc/analysis";
 import { flag, int, string, type Args, type Command } from "@thi.ng/args";
-import { files, readJSON, writeJSON } from "@thi.ng/file-io";
+import { illegalArgs } from "@thi.ng/errors";
+import { writeJSON } from "@thi.ng/file-io";
 import type { AppCtx, CommonOpts } from "../api.js";
 import { ARG_EXT, ARG_IDS, ARG_OUT_DIR } from "../args.js";
-import { filter } from "@thi.ng/transducers";
-import { illegalArgs } from "@thi.ng/errors";
-import { analyzeMotion, imageSequenceIntARGB } from "@layerinc/analysis";
+import {
+	assetDirForID,
+	filteredArtworks,
+	imagePathsForID,
+	readArtworks,
+} from "./utils.js";
 
 interface AnalyzeMotionOpts extends CommonOpts {
 	assetDir: string;
@@ -21,7 +25,7 @@ export const ANALYZE_MOTION: Command<
 	CommonOpts,
 	AppCtx<AnalyzeMotionOpts>
 > = {
-	desc: "Perform optical flow analysis for all or selected artworks from JSON DB (given as input or via LAYER_DB_PATH)",
+	desc: "Perform optical flow analysis for all or selected artworks",
 	opts: <Args<AnalyzeMotionOpts>>{
 		...ARG_EXT,
 		...ARG_IDS,
@@ -44,55 +48,44 @@ export const ANALYZE_MOTION: Command<
 	fn: command,
 };
 
-async function command({ inputs, opts, logger }: AppCtx<AnalyzeMotionOpts>) {
-	if (!opts.assetDir) illegalArgs("require --asset-dir");
-	const db = iterateArtworks(
-		readJSON<Artwork[]>(inputs[0] ?? process.env.LAYER_DB_PATH, logger)
-	);
-	const items = opts.id?.length
-		? filter((x) => opts.id.includes(x.id), db)
-		: db;
-	for (let item of items) {
-		const frames = [
-			...files(
-				opts.assetDir,
-				new RegExp(`${item.id}-\\d{4}.${opts.ext}$`)
+async function command(ctx: AppCtx<AnalyzeMotionOpts>) {
+	if (!ctx.opts.assetDir) illegalArgs("require --asset-dir");
+	await Promise.all(
+		[
+			...filteredArtworks(
+				readArtworks(ctx.inputs[0], ctx.logger),
+				ctx.opts.id
 			),
-		];
-		if (!frames.length) {
-			logger.warn("no images available for ID:", item.id, "skipping...");
-			continue;
-		}
-		const res = await analyzeMotion(
-			imageSequenceIntARGB(frames, {
-				size: opts.size,
-				deleteFiles: opts.delete,
-				logger,
-			})
-		);
-		writeJSON(
-			`${opts.outDir}/${item.id}-motion.json`,
-			res,
-			undefined,
-			undefined,
-			logger
-		);
-	}
+		].map((item) => processItem(item.id, ctx))
+	);
 }
 
-function* iterateArtworks(db: Artwork[]) {
-	for (let item of db) {
-		yield {
-			id: item.assetID,
-			artworkID: item.artworkID,
-		};
-		if (item.variations) {
-			for (let v of item.variations) {
-				yield {
-					id: v.id,
-					artworkID: item.artworkID,
-				};
-			}
-		}
+const processItem = async (
+	id: string,
+	{ opts, logger }: AppCtx<AnalyzeMotionOpts>
+) => {
+	const frames = imagePathsForID(
+		assetDirForID(opts.assetDir, id),
+		id,
+		opts.ext,
+		1
+	);
+	if (!frames.length) {
+		logger.warn("no images available for ID:", id, "skipping...");
+		return;
 	}
-}
+	const res = await analyzeMotion(
+		imageSequenceIntARGB(frames, {
+			size: opts.size,
+			deleteFiles: opts.delete,
+			logger,
+		})
+	);
+	writeJSON(
+		`${opts.outDir}/${id}-motion.json`,
+		res,
+		undefined,
+		undefined,
+		logger
+	);
+};

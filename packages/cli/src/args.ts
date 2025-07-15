@@ -40,6 +40,6 @@ export const ARG_EXT = {
 
 export const ARG_IDS = {
 	id: strings({
-		desc: "Asset or variation UUID. If given only these ID will be processed (otherwise all)",
+		desc: "Asset or variation UUID. If given only these IDs will be processed (otherwise all)",
 	}),
 };
