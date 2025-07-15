@@ -1,7 +1,10 @@
 import { withoutKeysObj } from "@thi.ng/object-utils";
+import {} from "@thi.ng/color";
+import { meanCut } from "@thi.ng/k-means";
 import type { FloatBuffer, IntBuffer } from "@thi.ng/pixel";
 import {
 	analyzeColors as $analyze,
+	derivedColorsResults,
 	type AnalyzedImage,
 } from "@thi.ng/pixel-analysis";
 import {
@@ -91,12 +94,29 @@ export const analyzeColors = (
 
 export const analyzeColorsSequence = async (
 	frames: AsyncIterable<IntBuffer | FloatBuffer>,
-	opts: Partial<ColorAnalysisOpts>
+	opts?: Partial<ColorAnalysisOpts>
 ) => {
 	const results: ColorAnalysisResult[] = [];
 	for await (const img of frames) {
 		results.push(analyzeColors(img, opts));
 	}
-	// TODO migrate result aggregation
-	return results;
+	return {
+		results,
+		merged: mergeColorAnalysisResults(results, opts?.numColors),
+	};
+};
+
+export const mergeColorAnalysisResults = (
+	results: ColorAnalysisResult[],
+	numColors = 4
+) => {
+	// compute mean dominant colors of all results
+	const dominant = meanCut(
+		numColors,
+		results.flatMap((res) => res.srgb.map((x) => [...x]))
+	);
+	const derived = derivedColorsResults(<number[][]>dominant);
+	return {
+		...derived,
+	};
 };
