@@ -1,3 +1,4 @@
+import { isNumber } from "@thi.ng/checks";
 import { FMT_HHmmss } from "@thi.ng/date";
 import { ensureDir, files } from "@thi.ng/file-io";
 import type { ILogger } from "@thi.ng/logger";
@@ -29,7 +30,7 @@ export interface ExtractVideoFrameOpts {
 	 * Target dimensions for extracted frames, given (as `[width,height]`
 	 * tuple). By default no resizing.
 	 */
-	size: [number, number];
+	size: number | [number, number];
 	/**
 	 * Output directory. By default a OS-specific temp dir.
 	 */
@@ -100,7 +101,12 @@ export const extractVideoFrames = async (
 		String(fps),
 	];
 	if (size) {
-		args.push(`-vf`, `size=${size[0]},${size[1]}`);
+		args.push(
+			`-vf`,
+			isNumber(size)
+				? `scale=${size}:${size}`
+				: `scale=${size[0]}:${size[1]}`
+		);
 	}
 	args.push(`${dir}${sep}${name}-%04d.${ext}`);
 	logger?.debug(`executing: ffmpeg ${args.join(" ")}`);

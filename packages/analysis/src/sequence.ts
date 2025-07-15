@@ -8,7 +8,7 @@ import {
 	floatBufferFromFileRGB,
 	intBufferFromFileARGB,
 	intBufferFromFileGray,
-} from "./pixel-buffer.js";
+} from "./buffer.js";
 
 export interface ImageSequenceOpts {
 	/**

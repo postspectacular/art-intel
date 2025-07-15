@@ -1,5 +1,3 @@
-import { withoutKeysObj } from "@thi.ng/object-utils";
-import {} from "@thi.ng/color";
 import { meanCut } from "@thi.ng/k-means";
 import type { FloatBuffer, IntBuffer } from "@thi.ng/pixel";
 import {
@@ -56,10 +54,7 @@ export interface ColorAnalysisOpts {
 	exponent: number;
 }
 
-export type ColorAnalysisResult = Omit<
-	AnalyzedImage,
-	"img" | "imgGray" | "imgHsv"
->;
+export type ColorAnalysisResult = AnalyzedImage;
 
 const MODES = {
 	kmeans: dominantColorsKmeans,
@@ -77,8 +72,8 @@ const MODES = {
 export const analyzeColors = (
 	img: IntBuffer | FloatBuffer,
 	opts?: Partial<ColorAnalysisOpts>
-) => {
-	const result = $analyze(img, {
+) =>
+	$analyze(img, {
 		dominantFn: MODES[opts?.mode ?? "kmeans"],
 		numColors: 4,
 		minSat: 0.25,
@@ -87,10 +82,6 @@ export const analyzeColors = (
 		size: 128,
 		...opts,
 	});
-	return <ColorAnalysisResult>(
-		withoutKeysObj(result, ["img", "imgGray", "imgHsv"])
-	);
-};
 
 export const analyzeColorsSequence = async (
 	frames: AsyncIterable<IntBuffer | FloatBuffer>,
