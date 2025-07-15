@@ -1,12 +1,14 @@
+import {
+	analyzeColorsSequence,
+	imageSequenceIntARGB,
+} from "@layerinc/analysis";
+import type { Artwork } from "@layerinc/core";
 import { int, string, type Args, type Command } from "@thi.ng/args";
-import type { AppCtx, CommonOpts } from "../api.js";
-import { ARG_EXT, ARG_IDS, ARG_OUT_DIR } from "../args.js";
-import { analyzeColors, intBufferFromFileARGB } from "@layerinc/analysis";
+import { illegalArgs } from "@thi.ng/errors";
 import { files, readJSON, writeJSON } from "@thi.ng/file-io";
 import { filter, takeNth } from "@thi.ng/transducers";
-import { illegalArgs } from "@thi.ng/errors";
-import type { Artwork } from "@layerinc/core";
-import { Z2 } from "@thi.ng/strings";
+import type { AppCtx, CommonOpts } from "../api.js";
+import { ARG_EXT, ARG_IDS, ARG_OUT_DIR } from "../args.js";
 
 interface AnalyzeColorOpts extends CommonOpts {
 	assetDir: string;
@@ -14,6 +16,7 @@ interface AnalyzeColorOpts extends CommonOpts {
 	id: string[];
 	outDir: string;
 	size: number;
+	skip: number;
 }
 
 export const ANALYZE_COLORS: Command<
@@ -35,6 +38,10 @@ export const ANALYZE_COLORS: Command<
 			desc: "Resize image to given size for analysis",
 			default: 256,
 		}),
+		skip: int({
+			desc: "Only process every Nth input frame from the image sequence.",
+			default: 30,
+		}),
 	},
 	fn: command,
 };
@@ -44,27 +51,33 @@ async function command({ inputs, opts, logger }: AppCtx<AnalyzeColorOpts>) {
 	const db = iterateArtworks(
 		readJSON<Artwork[]>(inputs[0] ?? process.env.LAYER_DB_PATH, logger)
 	);
-	const items = opts.id.length
+	const items = opts.id?.length
 		? filter((x) => opts.id.includes(x.id), db)
 		: db;
 	for (let item of items) {
-		const frames = takeNth(
-			30,
-			files(opts.assetDir, new RegExp(`${item.id}-\\d{4}.${opts.ext}$`))
-		);
-		let i = 0;
-		for (let frame of frames) {
-			const res = analyzeColors(
-				await intBufferFromFileARGB(frame, opts.size, logger)
-			);
-			writeJSON(
-				`${opts.outDir}/${item.id}-color-${Z2(i++)}.json`,
-				res,
-				undefined,
-				undefined,
-				logger
-			);
+		const frames = [
+			...takeNth(
+				opts.skip,
+				files(
+					opts.assetDir,
+					new RegExp(`${item.id}-\\d{4}.${opts.ext}$`)
+				)
+			),
+		];
+		if (!frames.length) {
+			logger.warn("no images available for ID:", item.id, "skipping...");
+			continue;
 		}
+		const result = await analyzeColorsSequence(
+			imageSequenceIntARGB(frames, { size: opts.size, logger })
+		);
+		writeJSON(
+			`${opts.outDir}/${item.id}-color.json`,
+			result,
+			undefined,
+			undefined,
+			logger
+		);
 	}
 }
 

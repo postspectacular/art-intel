@@ -49,7 +49,7 @@ async function command({ inputs, opts, logger }: AppCtx<AnalyzeMotionOpts>) {
 	const db = iterateArtworks(
 		readJSON<Artwork[]>(inputs[0] ?? process.env.LAYER_DB_PATH, logger)
 	);
-	const items = opts.id.length
+	const items = opts.id?.length
 		? filter((x) => opts.id.includes(x.id), db)
 		: db;
 	for (let item of items) {
@@ -59,7 +59,10 @@ async function command({ inputs, opts, logger }: AppCtx<AnalyzeMotionOpts>) {
 				new RegExp(`${item.id}-\\d{4}.${opts.ext}$`)
 			),
 		];
-		logger.info(frames);
+		if (!frames.length) {
+			logger.warn("no images available for ID:", item.id, "skipping...");
+			continue;
+		}
 		const res = await analyzeMotion(
 			imageSequenceIntARGB(frames, {
 				size: opts.size,
