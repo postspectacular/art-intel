@@ -23,10 +23,10 @@
 	"dependencies": {
 		"@thi.ng/api": "^8.11.30",
 		"@thi.ng/checks": "^3.7.10",
-		"@thi.ng/transducers": "^9.6.0"
+		"@thi.ng/transducers": "^9.6.1"
 	},
 	"devDependencies": {
-		"@types/node": "^24.0.13",
+		"@types/node": "^24.0.14",
 		"typedoc": "^0.28.7",
 		"typescript": "^5.8.3"
 	},

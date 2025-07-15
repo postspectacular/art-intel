@@ -15,7 +15,7 @@
 		"preview": "vite preview --open"
 	},
 	"devDependencies": {
-		"@thi.ng/meta-css": "^0.19.13",
+		"@thi.ng/meta-css": "^0.19.14",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4"
 	},
@@ -25,12 +25,12 @@
 		"@thi.ng/canvas": "^1.0.17",
 		"@thi.ng/date": "^2.7.56",
 		"@thi.ng/dl-asset": "^2.3.113",
-		"@thi.ng/geom": "^8.1.56",
-		"@thi.ng/hiccup-canvas": "^3.1.61",
+		"@thi.ng/geom": "^8.1.57",
+		"@thi.ng/hiccup-canvas": "^3.1.62",
 		"@thi.ng/pixel": "^7.5.2",
 		"@thi.ng/random": "^4.1.21",
 		"@thi.ng/strings": "^3.9.16",
-		"@thi.ng/tsne": "^0.1.24",
+		"@thi.ng/tsne": "^0.1.25",
 		"@thi.ng/vectors": "^8.3.3"
 	},
 	"browser": {
