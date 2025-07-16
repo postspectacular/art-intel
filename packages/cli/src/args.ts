@@ -12,13 +12,16 @@ export const ARGS_COMMON: Args<CommonOpts> = {
 	}),
 };
 
-export const ARG_OUT_FILE = {
+export const ARG_OUT_FILE = (
+	defaultVal?: string
+): { outFile: ReturnType<typeof string> } => ({
 	outFile: string({
 		alias: "o",
 		desc: "Output file",
-		optional: false,
+		default: defaultVal,
+		optional: !!defaultVal,
 	}),
-};
+});
 
 export const ARG_OUT_DIR = (
 	defaultVal?: string

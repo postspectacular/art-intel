@@ -26,7 +26,7 @@ export const CONVERT_DB: Command<
 > = {
 	desc: "Convert & filter Supabase CSV database snapshot into JSON",
 	opts: <Args<ConvertDBOpts>>{
-		...ARG_OUT_FILE,
+		...ARG_OUT_FILE(process.env.LAYER_DB_PATH),
 		all: flag({
 			alias: "a",
 			desc: "Include drafts & unpublished items",
